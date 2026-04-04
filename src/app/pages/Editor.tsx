@@ -75,7 +75,7 @@ export function Editor() {
     const prevBlockId = newBlocks[Math.max(0, index - 1)].id;
     newBlocks.splice(index, 1);
     setBlocks(newBlocks);
-    
+
     setTimeout(() => {
       const el = document.getElementById(`block-${prevBlockId}`);
       if (el) {
@@ -87,6 +87,18 @@ export function Editor() {
       }
     }, 50);
   }, [note.blocks, setBlocks, updateBlock]);
+
+  const duplicateBlock = useCallback((index: number) => {
+    const source = note.blocks[index];
+    const newBlock = { ...source, id: Math.random().toString(36).substring(2, 9) };
+    const newBlocks = [...note.blocks];
+    newBlocks.splice(index + 1, 0, newBlock);
+    setBlocks(newBlocks);
+    setTimeout(() => {
+      const el = document.getElementById(`block-${newBlock.id}`);
+      if (el) el.focus();
+    }, 50);
+  }, [note.blocks, setBlocks]);
 
   const handleDeleteNote = () => {
     if (confirm('Are you sure you want to delete this note?')) {
@@ -144,6 +156,7 @@ export function Editor() {
               updateBlock={updateBlock}
               addBlock={addBlock}
               removeBlock={removeBlock}
+              duplicateBlock={duplicateBlock}
               isOnlyBlock={note.blocks.length === 1}
             />
           ))}
